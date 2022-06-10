@@ -1,1 +1,1 @@
-# PBItool
+# Protein BioInformatics toolkit
