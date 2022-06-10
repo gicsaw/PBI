@@ -1,10 +1,10 @@
 from setuptools import setup, find_packages
 
-setup(name='pdbtools',
+setup(name='pbi',
         version='0.1',
-        packages=['pdbtools'],
+        packages=['pbi'],
 #        packages=find_packages(),
-        url='https://github.com/gicsaw/pdbtools',
+        url='https://github.com/gicsaw/pbi',
         license='MIT LICENSE',
         author='Seung Hwan Hong',
         author_email='gicsaw0@gmail.com',
