@@ -191,7 +191,7 @@ def find_m(d, para):
     (uniprot_chain_dict, chain_dict, ligand_chain_dict,
      ligand_name_dict) = read_pdb(pdb_file)
     if uniprot_id not in uniprot_chain_dict:
-        line_out =  pdb_file + ' does not have' + uniprot_id
+        line_out =  pdb_file + ' does not have ' + uniprot_id
         return line_out
     chain_list = uniprot_chain_dict[uniprot_id]
     chain_out = ''
