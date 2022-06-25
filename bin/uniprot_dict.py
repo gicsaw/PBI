@@ -255,13 +255,25 @@ def main():
 #            method = lis[1]
 #            resolution = lis[2]
             chain_positions = lis[3]
-            chain, positions = chain_positions.strip().split('=')
-            ini_p, fin_p = positions.strip().split('-')
+            chain_position_list = chain_positions.strip().split(',')
+            ini_p = None
+            fin_p = None
+            for chain_position in chain_position_list:
+                chain, positions = chain_position.strip().split('=')
+                ini_p0, fin_p0 = positions.strip().split('-')
+                if ini_p is None:
+                    ini_p = int(ini_p0)
+                elif ini_p > int(ini_p0):
+                    ini_p = int(ini_p0)
+                if fin_p is None:
+                    fin_p = int(fin_p0)
+                elif fin_p < int(fin_p0):
+                    fin_p = int(fin_p0)
             if ini != '':
-                if int(ini) > int(fin_p):
+                if int(ini) > fin_p:
                     continue
             if fin != '':
-                if int(fin) < int(ini_p):
+                if int(fin) < ini_p:
                     continue
 #            print(ini, fin, ini_p, fin_p)
             line_out = pdb_line + '\n'
