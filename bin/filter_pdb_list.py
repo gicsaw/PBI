@@ -41,20 +41,20 @@ def main():
             if resol > resolution_cutoff:
                 continue
 
-            chain_position_list = chain_positions.strip().split(',')
-            ini_p = None
-            fin_p = None
-            for chain_position in chain_position_list:
-                chain, positions = chain_position.strip().split('=')
-                ini_p0, fin_p0 = positions.strip().split('-')
-                if ini_p is None:
-                    ini_p = int(ini_p0)
-                elif ini_p > int(ini_p0):
-                    ini_p = int(ini_p0)
-                if fin_p is None:
-                    fin_p = int(fin_p0)
-                elif fin_p < int(fin_p0):
-                    fin_p = int(fin_p0)
+        chain_position_list = chain_positions.strip().split(',')
+        ini_p = None
+        fin_p = None
+        for chain_position in chain_position_list:
+            chain, positions = chain_position.strip().split('=')
+            ini_p0, fin_p0 = positions.strip().split('-')
+            if ini_p is None:
+                ini_p = int(ini_p0)
+            elif ini_p > int(ini_p0):
+                ini_p = int(ini_p0)
+            if fin_p is None:
+                fin_p = int(fin_p0)
+            elif fin_p < int(fin_p0):
+                fin_p = int(fin_p0)
 
         if ini != '':
             if int(ini) > fin_p:
