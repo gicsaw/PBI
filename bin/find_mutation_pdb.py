@@ -33,7 +33,7 @@ def read_pdb(file_name):
     check_m = False
     for line in lines:
         if line[0:10] == 'REMARK 465':
-            if line[15:27]('RES C SSSEQI'):
+            if line[15:27] == 'RES C SSSEQI':
                 check_m = True
                 continue
             if check_m:
