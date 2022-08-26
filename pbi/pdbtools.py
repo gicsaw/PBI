@@ -648,7 +648,7 @@ class PDBtools(object):
 #        fixer.applyMutations(["ALA-57-GLY"], "A")
 #        fixer.missingResidues = {}
         if add_missing_residue:
-            fixer.findMissingResidues()
+            a = fixer.findMissingResidues()
         else:
             fixer.missingResidues = {}
         missing_residues = fixer.missingResidues
@@ -671,6 +671,7 @@ class PDBtools(object):
 
         app.PDBFile.writeFile(fixer.topology, fixer.positions, fp_out, True)
         fp_out.close()
+
         return (missing_residues, nonstandard_residues,
                 missing_atoms, missing_terminals)
 
@@ -1015,7 +1016,7 @@ class PDBtools(object):
         model_dict = dict()
         model_dict[0] = (pdb_info_lines, protein_dict, conect_dict)
         cls.write_model_pdb(model_dict, output_file)
-        cls.obabel_rewrite(output_file, output_file, option=None)
+#        cls.obabel_rewrite(output_file, output_file, option=None)
         cls.fix_pdb(output_file, output_file, add_missing_residue=True, pH=7.4)
 #        cls.obabel_rewrite(output_file, output_file)
 
@@ -1033,7 +1034,7 @@ class PDBtools(object):
         model_dict = dict()
         model_dict[0] = (pdb_info_lines, protein_dict_new, conect_dict_new)
         cls.write_model_pdb(model_dict, output_file)
-        cls.obabel_rewrite(output_file, output_file)
+#        cls.obabel_rewrite(output_file, output_file)
 
     @ classmethod
     def read_cif(cls, input_file):
