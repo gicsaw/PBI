@@ -21,7 +21,8 @@ def main():
     else:
         tmp_file = output_file
 
-    PDBtools.fix_protein(input_file, tmp_file, add_missing_residue=True, pH=7.4)
+    PDBtools.fix_protein(input_file, tmp_file,
+                         add_missing_residue=True, pH=7.4)
     if out_format == 'pdbqt':
         e = PDBtools.protein_to_pdbqt(tmp_file, output_file)
         if e is not None:
