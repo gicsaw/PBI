@@ -2,6 +2,8 @@
 import sys
 import os
 from urllib import request
+import gzip
+import shutil
 
 usage = '''
 dw_pdb.py list_file pdb_dir
@@ -33,9 +35,15 @@ def main():
 #        chain_positions = lis[3]
 
         print(pdb_id)
-        line_pdb = 'https://files.rcsb.org/download/%s.pdb' % pdb_id
+        line_pdb = 'https://files.rcsb.org/download/%s.pdb.gz' % pdb_id
+        pdb_gz_file = '%s/%s.pdb.gz' % (pdb_dir, pdb_id)
         pdb_file = '%s/%s.pdb' % (pdb_dir, pdb_id)
-        request.urlretrieve(line_pdb, pdb_file)
+
+        request.urlretrieve(line_pdb, pdb_gz_file)
+
+        with gzip.open(pdb_gz_file, 'rb') as fp_gz:
+            with open(pdb_file, 'wb') as fp_pdb:
+                shutil.copyfileobj(fp_gz, fp_pdb)
 
         line_fasta = 'https://www.rcsb.org/fasta/entry/%s' % pdb_id
         fasta_file = '%s/%s.fasta' % (pdb_dir, pdb_id)
