@@ -1,12 +1,8 @@
-chanels:
-    - conda-forge 
-    - bioconda
-    - anaconda
-    - rdkit
-    - tpeulen
+channels:
+  - conda-forge 
 dependencies:
-    cmake
-    openbabel >=3.1.0
-    rdkit >=2020
-    pdbfixer >=1.8.1
-    pymol-open-source >= 2.4
+  - cmake
+  - openbabel=3
+  - rdkit=2022
+  - pdbfixer>=1.8.1
+  - pymol-open-source=2
