@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 import numpy as np
 from openbabel import pybel
-from rdkit import Chem
-from rdkit.Chem import AllChem
 import subprocess
 
 
@@ -43,18 +41,42 @@ def ligand_preparation(smi, neutralize, pH):
     return smi_p
 
 
-def check_gen3d_rd(m3):
-    conformer = m3.GetConformer()
-    positions = conformer.GetPositions()
+def check_gen3d(ligand_file, file_format=None):
+    if file_format is None:
+        file_format = ligand_file.strip().split('.')[-1]
+
+    ms = pybel.readfile(file_format, ligand_file)
+    ms = list(ms)
+    m = ms[0]
+    atoms = m.atoms
     count_0 = 0
-    for i in range(0, positions.shap[0]):
-        coor = positions[i]
+    check_error = False
+
+    for atom in atoms:
+        coor = atom.coords
         x, y, z = coor
         if x == 0.0 and y == 0.0 and z == 0.0:
             count_0 += 1
         if count_0 >= 2:
             check_error = True
             break
+
+    return check_error
+
+
+def check_gen3d_pdb(line_list):
+    count_0 = 0
+    check_error = False
+    for line in line_list:
+        if line[0:6] == 'HETATM' or line[0:6] == 'ATOM  ':
+            x = float(line[30:38])
+            y = float(line[38:46])
+            z = float(line[46:54])
+            if x == 0.0 and y == 0.0 and z == 0.0:
+                count_0 += 1
+            if count_0 >= 2:
+                check_error = True
+                break
 
     return check_error
 
@@ -141,34 +163,81 @@ def add_mol_id(result, mol_id):
 
 
 def gen_3d(smi, ligand_file, mol_id=None, file_format=None, timeout=10):
-
     if file_format is None:
         file_format = ligand_file.strip().split('.')[-1]
-    if file_format not in ['pdb', 'mol', 'sdf']:
-        e = 'error: file_format not in pdb, mol, sdf'
+    if file_format == 'pdb':
+        e = gen_3d_pdb(smi, ligand_file, timeout=timeout)
         return e
 
-    m = Chem.MolFromSmiles(smi)
-    m3 = Chem.AddHs(m)
-    check_error = AllChem.EmbedMolecule(m3)
+    run_line = 'obabel -:%s --gen3D -o%s' % (smi, file_format)
+    e = None
+    try:
+        result = subprocess.run(run_line.split(), capture_output=True,
+                                check=True, universal_newlines=True,
+                                timeout=timeout)
+    except Exception as e:
+        return e
 
-#    check_error = check_gen3d_rd(m3)
+    err_lines = result.stderr.split('\n')
+    for i, line in enumerate(err_lines):
+        idx = line.find('Error')
+        if idx != -1:
+            e = err_lines[i] + err_lines[i+1]
+            return e
+
+    result_data = result.stdout
+
+    if (file_format == 'mol' or file_format == 'sdf') and mol_id is not None:
+        total_line_out = add_mol_id(result_data, mol_id)
+    else:
+        total_line_out = result_data
+    fp = open(ligand_file, 'w')
+    fp.write(total_line_out)
+    fp.close()
+
+    check_error = check_gen3d(ligand_file, file_format)
     if check_error:
         e = 'error: gen 3d, two or more (0,0,0)'
         return e
 
-    if file_format == 'pdb':
-        Chem.MolToPDBFile(m3, ligand_file, flavor=4)
+    return e
 
-    if file_format == 'mol' or file_format == 'sdf':
-        result_data = Chem.MolToMolBlock(m3)
-        if mol_id is not None:
-            total_line_out = add_mol_id(result_data, mol_id)
-        else:
-            total_line_out = result_data
-        fp = open(ligand_file, 'w')
-        fp.write(total_line_out)
-        fp.close()
+
+def gen_3d_pdb(smi, ligand_file, timeout=10):
+    """
+        generate initial 3d conformation from SMILES
+        input :
+            SMILES string
+            ligand_file (output file, pdb)
+    """
+    run_line = 'obabel -:%s --gen3D -opdb' % (smi)
+    e = None
+    try:
+        result = subprocess.run(run_line.split(), capture_output=True,
+                                check=True, universal_newlines=True,
+                                timeout=timeout)
+    except Exception as e:
+        return e
+
+    err_lines = result.stderr.split('\n')
+    for i, line in enumerate(err_lines):
+        idx = line.find('Error')
+        if idx != -1:
+            e = err_lines[i] + err_lines[i+1]
+            return e
+
+    result_lines = result.stdout.strip('\n').split('\n')
+    check_error = check_gen3d_pdb(result_lines)
+    if check_error:
+        e = 'error: gen 3d, two or more (0,0,0)'
+        return e
+
+    total_line_out = fix_ligand_atom_idx(result_lines)
+    fp = open(ligand_file, 'w')
+    fp.write(total_line_out)
+    fp.close()
+
+    return e
 
 
 def obabel_rewrite(input_file, output_file, option=None):
