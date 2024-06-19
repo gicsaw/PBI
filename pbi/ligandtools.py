@@ -355,6 +355,66 @@ def read_coor_pdb(input_file, exclude_Hs=True):
 
     return model_dict
 
+def gen_conf_ref(m_new_m):
+    m_new = Chem.RemoveAllHs(m_new_m)
+    m_new_h = Chem.AddHs(m_new)
+    num_atoms_mcs = m_new_h.GetNumAtoms()
+    coordmap = dict()
+    conf0 = m_new_h.GetConformer()
+
+    for i in range(num_atoms_mcs):
+        pos = conf0.GetAtomPosition(i)
+        if np.linalg.norm((pos.x, pos.y, pos.z)) == 0:
+            continue
+        coordmap[i] = pos
+    cids = AllChem.EmbedMultipleConfs(m_new_h, numConfs=1, numThreads=1,
+                                      clearConfs=True, useRandomCoords=True,
+                                      coordMap=coordmap)
+    return m_new_h
+
+
+def find_root_atom_idx(m_new, m_ref_com, match_idx=0, atom_idx=0):
+    match_atoms_list = m_new.GetSubstructMatches(m_ref_com, uniquify=False)
+    root_atom_idx = match_atoms_list[match_idx][atom_idx]
+    return root_atom_idx
+
+def pdbqt_to_flex(pdbqt0, flex_pdbqt):
+    fp = open(pdbqt0)
+    lines = fp.readlines()
+    fp.close()
+
+    fp_out = open(flex_pdbqt, 'w')
+    residue_name = 'UNL'
+    chain_id = ' '
+    res_idx = '   1'
+    line_begin = 'BEGIN_RES %s %s %s\n' % (residue_name, chain_id, res_idx)
+    fp_out.write(line_begin)
+    for line in lines:
+        if line[0:7] == 'TORSDOF':
+            continue
+        fp_out.write(line)
+    line_end = 'END_RES %s %s %s\n' % (residue_name, chain_id, res_idx)
+    fp_out.write(line_end)
+    fp_out.close()
+
+
+def split_pdbqt_dict(pdbqt):
+    fp = open(pdbqt)
+    lines = fp.readlines()
+    fp.close()
+
+    model_dict = dict()
+
+    for line in lines:
+        if line[0:5] == 'MODEL':
+            model_id = int(line[6:].strip())
+            model_dict[model_id] = list()
+            continue
+        elif line[0:6] == 'ENDMDL':
+            continue
+        model_dict[model_id].append(line)
+    return model_dict
+
 
 def cal_ligand_size(ligand):
     coor_list = list()
