@@ -88,7 +88,8 @@ def fix_ligand_atom_idx(line_list):
     return total_line_out
 
 
-def fix_ligand(input_file, output_file, neutralize=False, pH=None, add_hydrogen=True, is_fix_atom_idx=True):
+def fix_ligand(input_file, output_file, neutralize=False, pH=None,
+               add_hydrogen=True, is_fix_atom_idx=True):
     tmp_file = output_file
     option_h = ''
     if neutralize:
@@ -355,6 +356,7 @@ def read_coor_pdb(input_file, exclude_Hs=True):
 
     return model_dict
 
+
 def gen_conf_ref(m_new_m):
     m_new = Chem.RemoveAllHs(m_new_m)
     m_new_h = Chem.AddHs(m_new)
@@ -377,6 +379,7 @@ def find_root_atom_idx(m_new, m_ref_com, match_idx=0, atom_idx=0):
     match_atoms_list = m_new.GetSubstructMatches(m_ref_com, uniquify=False)
     root_atom_idx = match_atoms_list[match_idx][atom_idx]
     return root_atom_idx
+
 
 def pdbqt_to_flex(pdbqt0, flex_pdbqt):
     fp = open(pdbqt0)
