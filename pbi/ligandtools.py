@@ -159,7 +159,16 @@ def gen_3d(smi, ligand_file, mol_id=None, file_format=None, timeout=10):
         return e
 
     if file_format == 'pdb':
-        Chem.MolToPDBFile(m3, ligand_file, flavor=4)
+
+#        Chem.MolToPDBFile(m3, ligand_file, flavor=4)
+        result_data = Chem.MolToPDBBlock(m3, flavor=4)
+        if mol_id is not None:
+            total_line_out = result_data.replace('UNL', mol_id)
+        else:
+            total_line_out = result_data
+        fp = open(ligand_file, 'w')
+        fp.write(total_line_out)
+        fp.close()
 
     if file_format == 'mol' or file_format == 'sdf':
         result_data = Chem.MolToMolBlock(m3)
