@@ -252,7 +252,7 @@ def read_pdbqt_file(pdbqt_file):
 
         if line[0:6] == 'REMARK':
             model_dict[model_num]['REMARK'] += [line]
-        if line[0:6] == 'HETATM':
+        if line[0:6] == 'HETATM' or line[0:6] == 'ATOM  ':
             atom_name = line[12:16]
             pos = line[30:54]
             model_dict[model_num]['HETATM'][atom_name] = pos
