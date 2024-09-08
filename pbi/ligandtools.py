@@ -160,7 +160,7 @@ def gen_3d(smi, ligand_file, mol_id=None, file_format=None, timeout=10):
 
     if file_format == 'pdb':
 
-#        Chem.MolToPDBFile(m3, ligand_file, flavor=4)
+        #        Chem.MolToPDBFile(m3, ligand_file, flavor=4)
         result_data = Chem.MolToPDBBlock(m3, flavor=4)
         if mol_id is not None:
             total_line_out = result_data.replace('UNL', mol_id)
@@ -382,6 +382,20 @@ def gen_conf_ref(m_new_m):
                                       clearConfs=True, useRandomCoords=True,
                                       coordMap=coordmap)
     return m_new_h
+
+
+def gen_conf_ref_mol(m, m_ref):
+    m_new = Chem.RemoveAllHs(m)
+    m_h = Chem.AddHs(m_new)
+    check_error = AllChem.EmbedMolecule(m_h)
+    if check_error:
+        return 'error'
+
+    match = m_h.GetSubstructMatch(m_ref)
+    atommap = [[x, i] for i, x in enumerate(match)]
+    rmsd = Chem.rdMolAlign.AlignMol(m_h, m_ref, atomMap=atommap)
+
+    return m, rmsd
 
 
 def find_root_atom_idx(m_new, m_ref_com, match_idx=0, atom_idx=0):
