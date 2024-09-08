@@ -395,7 +395,7 @@ def gen_conf_ref_mol(m, m_ref):
     atommap = [[x, i] for i, x in enumerate(match)]
     rmsd = Chem.rdMolAlign.AlignMol(m_h, m_ref, atomMap=atommap)
 
-    return m, rmsd
+    return m_h, rmsd
 
 
 def find_root_atom_idx(m_new, m_ref_com, match_idx=0, atom_idx=0):
