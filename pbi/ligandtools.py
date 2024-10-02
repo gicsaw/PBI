@@ -330,6 +330,56 @@ def pdbqt_to_pdb_ref(input_pdbqt_file, output_pdb_file, ref_pdb_file):
     run_line = 'obabel %s -h -O %s' % (output_pdb_file, output_pdb_file)
     subprocess.check_output(run_line.split(), stderr=subprocess.STDOUT,
                             universal_newlines=True)
+
+    h_list = list()
+    for atom_idx in ref_atom_dict.keys():
+        atom_line = ref_atom_dict[atom_idx]
+        atom_name = atom_line[12:16].strip()
+        if atom_name.startswith('H'):
+            h_list.append(atom_idx)
+#    print(h_list)
+
+    h_atom_dict_ref = dict()
+    for hatom_idx in h_list:
+        h_pair_atom = ref_conect_dict[hatom_idx][0]
+        if h_pair_atom not in h_atom_dict_ref:
+            h_atom_dict_ref[h_pair_atom] = list()
+        h_atom_dict_ref[h_pair_atom].append(hatom_idx)
+#    print(h_atom_dict_ref)
+
+    m_pdb = PDBtools.read_pdb_ligand(output_pdb_file)
+    p_keys = sorted(m_pdb.keys())
+
+    m_pdb_new = dict()
+
+    for key in p_keys:
+        ligand_atom_dict = m_pdb[key][1]
+        ligand_conect_dict = m_pdb[key][2]
+
+        h_atom_match_dict = dict()
+        mm_list = list()
+        for hatom_idx in h_list:
+            h_pair_atom = ligand_conect_dict[hatom_idx][0]
+#            print(hatom_idx, h_pair_atom)
+            if h_pair_atom not in mm_list:
+                mm_list.append(h_pair_atom)
+                count = -1
+            count += 1
+            h_atom_match_dict[hatom_idx] = h_atom_dict_ref[h_pair_atom][count]
+#        print(h_atom_match_dict)
+        ligand_atom_dict2 = dict()
+        for atom_idx in ligand_atom_dict.keys():
+            if atom_idx not in h_list:
+                ligand_atom_dict2[atom_idx] = ligand_atom_dict[atom_idx]
+            else:
+                atom_idx_new = h_atom_match_dict[atom_idx]
+                atom_line = ligand_atom_dict[atom_idx]
+                ligand_atom_dict2[atom_idx_new] = '%s%s' % (
+                    ref_atom_dict[atom_idx_new][:16], atom_line[16:])
+
+        m_pdb_new[key] = (m_pdb[key][0], ligand_atom_dict2, ref_conect_dict)
+    PDBtools.write_model_pdb(m_pdb_new, output_pdb_file)
+
     return
 
 
@@ -400,7 +450,6 @@ def pdb_to_mol2(pdb_file, mol2_file, is_kekule):
             fp_out.write(line)
 
     fp_out.close()
-
 
 
 def read_coor_pdb(input_file, exclude_Hs=True):
