@@ -327,7 +327,9 @@ def pdbqt_to_pdb_ref(input_pdbqt_file, output_pdb_file, ref_pdb_file):
     fp_out.write(line_out)
     fp_out.close()
 
-    run_line = 'obabel %s -h -O %s' % (output_pdb_file, output_pdb_file)
+    #obabel READ option -as Output single bonds only
+    #obabel READ option -ab Disable bonding entirely
+    run_line = 'obabel %s -ab -h -O %s' % (output_pdb_file, output_pdb_file)
     subprocess.check_output(run_line.split(), stderr=subprocess.STDOUT,
                             universal_newlines=True)
 
@@ -355,7 +357,7 @@ def pdbqt_to_pdb_ref(input_pdbqt_file, output_pdb_file, ref_pdb_file):
     for key in p_keys:
         ligand_atom_dict = m_pdb[key][1]
         ligand_conect_dict = m_pdb[key][2]
-
+#        print(ligand_conect_dict)
         h_atom_match_dict = dict()
         mm_list = list()
         for hatom_idx in h_list:
