@@ -13,13 +13,17 @@ def main():
                         help='output ligand pdb file')
     parser.add_argument('-m', '--mol_id', required=False, default=None,
                         help='write molecule id to file.')
+    parser.add_argument('-r', '--random_coor', required=False, default=False,
+                        action='store_true',
+                        help='use random coordinates, defalut=False.')
 
     args = parser.parse_args()
     smi = args.input_smi
     output_file = args.output_file
     mol_id = args.mol_id
+    random_coor = args.random_coor
 
-    e = ligandtools.gen_3d(smi, output_file, mol_id)
+    e = ligandtools.gen_3d(smi, output_file, mol_id, random_coor=random_coor)
     if e is not None:
         print(e)
 

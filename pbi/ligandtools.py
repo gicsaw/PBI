@@ -142,7 +142,7 @@ def add_mol_id(result, mol_id):
     return total_line_out
 
 
-def gen_3d(smi, ligand_file, mol_id=None, file_format=None, timeout=10):
+def gen_3d(smi, ligand_file, mol_id=None, file_format=None, random_coor=False, timeout=10):
 
     if file_format is None:
         file_format = ligand_file.strip().split('.')[-1]
@@ -152,7 +152,7 @@ def gen_3d(smi, ligand_file, mol_id=None, file_format=None, timeout=10):
 
     m = Chem.MolFromSmiles(smi)
     m3 = Chem.AddHs(m)
-    check_error = AllChem.EmbedMolecule(m3)
+    check_error = AllChem.EmbedMolecule(m3, useRandomCoords=random_coor)
 
 #    check_error = check_gen3d_rd(m3)
     if check_error:
