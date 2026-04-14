@@ -2,7 +2,7 @@ channels:
   - conda-forge 
 dependencies:
   - cmake
-  - openbabel=3
-  - rdkit=2022
+  - openbabel>=3
+  - rdkit>=2022
   - pdbfixer>=1.8.1
-  - pymol-open-source=2
+  - pymol-open-source>=2
