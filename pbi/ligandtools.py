@@ -197,7 +197,7 @@ def obabel_rewrite(input_file, output_file, option=None):
 
 def pdb_to_pdbqt(pdb_file, pdbqt_file):
 
-    run_line = 'prepare_ligand4.py -l %s -o %s' % (pdb_file, pdbqt_file)
+    run_line = 'prepare_ligand4 -l %s -o %s' % (pdb_file, pdbqt_file)
     run_line += ' -U nphs_lps'
     e = None
     try:
