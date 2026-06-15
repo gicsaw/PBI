@@ -17,13 +17,26 @@ def main():
                         action='store_true',
                         help='use random coordinates, defalut=False.')
 
+    parser.add_argument('-s', '--use_simple', required=False, default=False,
+                        action='store_true',
+                        help='use short option, defalut=False.')
+
+    parser.add_argument('-u', '--use_uff', required=False, default=False,
+                        action='store_true',
+                        help='use UFFOptimization, defalut=False.')
+
+
     args = parser.parse_args()
     smi = args.input_smi
     output_file = args.output_file
     mol_id = args.mol_id
     random_coor = args.random_coor
+    use_simple = args.use_simple
+    use_uff = args.use_uff
 
-    e = ligandtools.gen_3d(smi, output_file, mol_id, random_coor=random_coor)
+
+    e = ligandtools.gen_3d(smi, output_file, mol_id, random_coor=random_coor,
+                           use_simple=use_simple, use_uff=use_uff)
     if e is not None:
         print(e)
 

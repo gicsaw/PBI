@@ -5,7 +5,8 @@ from rdkit import Chem
 from rdkit.Chem import AllChem
 import subprocess
 from .pdbtools import PDBtools
-
+import copy
+import time
 
 def ligand_preparation(smi, neutralize, pH):
     """
@@ -142,7 +143,8 @@ def add_mol_id(result, mol_id):
     return total_line_out
 
 
-def gen_3d(smi, ligand_file, mol_id=None, file_format=None, random_coor=False, timeout=10):
+def gen_3d(smi, ligand_file, mol_id=None, file_format=None, random_coor=False,
+           use_simple=False, use_uff=False):
 
     if file_format is None:
         file_format = ligand_file.strip().split('.')[-1]
@@ -152,12 +154,27 @@ def gen_3d(smi, ligand_file, mol_id=None, file_format=None, random_coor=False, t
 
     m = Chem.MolFromSmiles(smi)
     m3 = Chem.AddHs(m)
-    check_error = AllChem.EmbedMolecule(m3, useRandomCoords=random_coor)
+
+    params = AllChem.ETKDGv3()
+#    params.randomSeed = 1
+    params.useRandomCoords = random_coor
+
+#    params.maxIterations = 20
+    if use_simple:
+        params.useExpTorsionAnglePrefs = False
+        params.useBasicKnowledge = False
+    check_error = AllChem.EmbedMolecule(m3, params)
 
 #    check_error = check_gen3d_rd(m3)
     if check_error:
         e = 'error: gen 3d, two or more (0,0,0)'
         return e
+    if use_uff:
+        m4 = copy.copy(m3)
+        st = time.time()
+        check_error2 = AllChem.UFFOptimizeMolecule(m3, maxIters=50)
+        et = time.time()
+        print('ggg', et-st)
 
     if file_format == 'pdb':
 
