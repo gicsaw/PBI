@@ -170,11 +170,11 @@ def gen_3d(smi, ligand_file, mol_id=None, file_format=None, random_coor=False,
         e = 'error: gen 3d, two or more (0,0,0)'
         return e
     if use_uff:
-        m4 = copy.copy(m3)
-        st = time.time()
+#        m4 = copy.copy(m3)
+#        st = time.time()
         check_error2 = AllChem.UFFOptimizeMolecule(m3, maxIters=50)
-        et = time.time()
-        print('ggg', et-st)
+#        et = time.time()
+#        print('ggg', et-st)
 
     if file_format == 'pdb':
 
