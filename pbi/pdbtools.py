@@ -1190,7 +1190,7 @@ class PDBtools(object):
 
     @ classmethod
     def ligand_to_pdbqt(cls, pdb_file, pdbqt_file):
-        run_line = 'prepare_ligand.py -l %s -o %s' % (pdb_file, pdbqt_file)
+        run_line = 'prepare_ligand4 -l %s -o %s' % (pdb_file, pdbqt_file)
         run_line += ' -U nphs_lps'
         e = None
         try:
@@ -1203,7 +1203,7 @@ class PDBtools(object):
 
     @ classmethod
     def protein_to_pdbqt(cls, pdb_file, pdbqt_file):
-        run_line = 'prepare_receptor.py -r %s -o %s' % (pdb_file, pdbqt_file)
+        run_line = 'prepare_receptor4 -r %s -o %s' % (pdb_file, pdbqt_file)
 #        run_line += ' -U nphs_lps_waters_nonstdres'
         run_line += ' -U nphs_lps_nonstdres'
 
